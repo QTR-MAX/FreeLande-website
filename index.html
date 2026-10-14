@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FreeLands</title>
+<style>
+  :root{
+    --bg:#0d1117; --bg2:#161b22; --card:#1c2430; --accent:#2ea043; --accent2:#58a6ff;
+    --text:#e6edf3; --muted:#8b949e; --border:#2d333b;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Segoe UI',Tahoma,Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.8}
+  a{color:var(--accent2);text-decoration:none}
+
+  /* Header */
+  header{background:linear-gradient(135deg,#0d1117 0%,#12341c 100%);border-bottom:2px solid var(--accent);
+    padding:60px 20px;text-align:center}
+  header h1{font-size:2.4rem;color:#fff;text-shadow:0 2px 10px rgba(46,160,67,.5)}
+  header p{color:var(--muted);margin-top:10px;font-size:1.1rem}
+
+  /* Nav */
+  nav{background:var(--bg2);padding:12px;text-align:center;position:sticky;top:0;z-index:10;border-bottom:1px solid var(--border)}
+  nav a{color:var(--text);margin:0 14px;font-weight:bold}
+  nav a:hover{color:var(--accent)}
+
+  section{max-width:1000px;margin:40px auto;padding:0 20px}
+  h2{color:var(--accent);border-right:4px solid var(--accent);padding-right:12px;margin-bottom:20px}
+
+  /* Cards */
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;transition:.2s}
+  .card:hover{border-color:var(--accent);transform:translateY(-3px)}
+  .card h3{color:#fff;margin-bottom:8px}
+  .label{color:var(--muted);font-size:.9rem}
+
+  /* Server IP box */
+  .ip-box{background:#0d1117;border:1px dashed var(--accent);border-radius:10px;padding:14px;
+    font-family:Consolas,monospace;font-size:1.2rem;text-align:center;letter-spacing:1px}
+  .btn{display:inline-block;background:var(--accent);color:#fff;padding:10px 24px;border-radius:8px;
+    font-weight:bold;margin-top:10px;cursor:pointer;border:none;font-size:1rem}
+  .btn:hover{background:#3fb950}
+
+  .status{display:inline-block;padding:4px 14px;border-radius:20px;font-weight:bold;font-size:.9rem}
+  .online{background:rgb(180, 17, 17);color:#e3edee;border:1px solid #000000}
+
+  ul.rules{list-style:none}
+  ul.rules li{padding:10px 0;border-bottom:1px solid var(--border)}
+  ul.rules li::before{content:"🦖 ";margin-left:8px}
+
+  /* Discord */
+  .discord{background:linear-gradient(135deg,#1c2430,#2b3a55);border:1px solid var(--border);border-radius:16px;
+    padding:40px;text-align:center}
+  .discord h2{border:none;padding:0;color:#fff}
+  .btn-discord{display:inline-block;background:#5865F2;color:#fff;padding:14px 36px;border-radius:10px;
+    font-size:1.2rem;font-weight:bold;margin-top:16px}
+  .btn-discord:hover{background:#4752c4}
+
+  footer{text-align:center;padding:30px;color:var(--muted);border-top:1px solid var(--border);margin-top:40px;font-size:.9rem}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🦕 سيرفر [FreeLands] — ARK: Survival Ascended</h1>
+  <p>مغامرة، ديناصورات، وتروبس! انضم لأقوى سيرفر عربي</p>
+</header>
+
+<nav>
+  <a href="#info">معلومات السيرفر</a>
+  <a href="#status">الحالة</a>
+  <a href="#mods"> المودات الاساسية</a>
+  <a href="#rules">القوانين</a>
+  <a href="#discord">الديسكورد</a>
+</nav>
+
+<!-- ═══ معلومات السيرفر ═══ -->
+<section id="info">
+  <h2>معلومات السيرفر</h2>
+  <div class="grid">
+    <div class="card">
+      <h3>📡 أسم السيرفر </h3>
+      <div class="ip-box" id="ip">FreeLands/PVP/6man/S2</div>
+      <button class="btn" onclick="copyIP()">نسخ العنوان</button>
+    </div>
+    <div class="card">
+      <h3>🗺️ الخريطة</h3>
+      <p>The center</p>
+    </div>
+    <div class="card">
+      <h3>⚙️ الإعدادات</h3>
+      <p>🔥 PvP &nbsp;|&nbsp; ⏫ ×50 XP &nbsp;×10 Harvest &nbsp;×100 Taming</p>
+      <span class="label">عدّل المعدلات حسب سيرفرك</span>
+    </div>
+    <div class="card">
+      <h3>👥 عدد اللاعبين</h3>
+      <p style="font-size:1.6rem;font-weight:bold;color:#3fb950">20 \ 0</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ حالة السيرفر المباشرة ═══ -->
+<section id="status">
+  <h2>الحالة المباشرة (Live)</h2>
+  <div class="card" style="text-align:center">
+    <span class="status online">● مغلق للصيانة</span>
+    <!--
+      🟢 لجعل العداد المباشر يعمل فعلياً:
+      1) افتح موقع battlemetrics.com وابحث عن سيرفرك
+      2) ادخل صفحة السيرفر ← زر "Widget"
+      3) انسخ الكود الذي يعطيك وضعه هنا مكان هذا التعليق
+    -->
+    <p style="margin-top:12px;color:var(--muted)">اللاعبون المتصلون الآن: <b style="color:#fff" id="players">0</b></p>
+    <p class="label" style="margin-top:8px">هنا يُعرض ودجت Battlemetrics بعد تركيب الكود</p>
+  </div>
+</section>
+
+<!-- ═══ المودات ═══ -->
+<section id="mods">
+  <h2> المودات الاساسية (Mods)</h2>
+  <div class="grid">
+    <div class="card"><h3> Arkomatic </h3><p class="label"> تفريم وتطور سريع </p></div>
+    <div class="card"><h3>Awesome SpyGlass</h3><p class="label">منظار معلومات متقدم</p></div>
+    <div class="card"><h3>Dino Finer and SHOP </h3><p class="label">العثور على الداينوات والمتاجرة بها بي سهولة</p></div>
+  </div>
+</section>
+<section>
+    <div class="card">
+      <h3>BOOST</h3>
+      <p style="font-size:1.6rem;font-weight:bold;color:#3fb950">$5</p>
+      <span class="label">NORMAL</span>
+    </div>
+    <h2></h2>
+    <div class="card">
+      <h3>BOOST</h3>
+      <p style="font-size:1.6rem;font-weight:bold;color:#8e08a0">$10</p>
+      <span class="label">VIP</span>
+    </div>
+    <h2></h2>
+    <div class="card">
+      <h3> BOOST</h3>
+      <p style="font-size:1.6rem;font-weight:bold;color:#b0ce07">$15</p>
+      <span class="label">VIIP</span>
+    </div>
+</section>
+<!-- ═══ القوانين ═══ -->
+<section id="rules">
+  <h2>قوانين السيرفر</h2>
+  <h2>حرصاً على المنافسة العادلة والمتعة للجميع، يرجى الالتزام بالقوانين التالية:</h2>
+  <div class="card">
+    <ul class="rules">
+      <li>ممنوع استغلال القلتشات
+يُمنع استخدام أي قلتشات أو ثغرات بهدف تخريب الفريمات أو التأثير على أداء اللاعبين والسيرفر.</li>
+      <li>ممنوع الهجوم على البيوت المحمية بالعلم الأبيض 🏳️
+وجود العلم الأبيض أمام البيت يعني أن جميع أعضاء الترايب أوفلاين، وبالتالي يُمنع الهجوم على البيت أو تدميره حتى عودة أحد أعضاء الترايب.</li>
+      <li> نظام الرايد في السيرفر ⚔️
+السيرفر مو بنظام سيرفرات اليوتيوبرز أو الحروب المنظمة فقط، بل يعتمد على نظام الـ PvP والـ Raid مثل الأوفيشل، ويُسمح فيه بالهجوم وتدمير ومسح القواعد بالكامل، مع الالتزام بقانون العلم الأبيض</li>
+      <li>احترم اللاعبين — الشتم المباشر أو الأهانة بي شتى انواعها قد يعرّضك هذا للعقوبة</li>
+      <li>الهجوم على القواعد مسموح فقط أثناء أوقات الـ PvP ( من الأحد حتى الخميس )</li>
+      <li>مظايقت الستريم : اثناء اللعب في حال تم الاعلان عن فعالية من قبل ستريمر يمنع التدخل او التخريب ستحصل على تحذير سواء عن قصد او من غير قصد</li>
+      <li>يمنع استخدام الميش أو بشكل عام يمنع على اللاعب استخدام اي مكان لا يفترض ان يصل أليه يعني لا تسكن فيه او تهجم منه أو تخبي فيه : معارضة ذالك سيعرضك للباند</li>
+      <li>القريق الذي يتوقف عن اللعب لمدة ثلاث ايام لا تشملة قاعدة العلم الابيض صور الوقت وارسله لسيرفرنا فالدس كورد و بعدها يمكنك الهجوم على القاعدة</li>
+      <li>على كل اللاعبين ان يسمون شخصياتهم الاسم غير مرغوب فيه اختر لنفسك اسم نستطيع تمييزة(Human)</li>
+      <li>عدم قرائتك للأحة لايعفيك ولا يعذرك</li>
+    </ul>
+  </div>
+</section>
+<section>
+    <div class="card">
+      <h3> LEDAR BOARD 🌟 </h3>
+      <p style="font-size:1.6rem;font-weight:bold;color:#b6b305">1.</p>
+      <p style="font-size:1.6rem;font-weight:bold;color:#10a5ca">2.</p>
+      <p style="font-size:1.6rem;font-weight:bold;color:#dd6c0f">3.</p>
+      <span class="label">Only The Top Three Will Show Up Here</span>
+    </div>
+</section>
+<!-- ═══ الديسكورد ═══ -->
+<section id="discord">
+  <div class="discord">
+    <h2>💬 انضم لمجتمعنا في الديسكورد</h2>
+    <p style="color:var(--muted)">تبّيهات السيرفر، فعاليات، دعم فني، وسلة الهدايا!</p>
+    <a class="btn-discord" href="https://discord.gg/oc1" target="_blank">انضم الآن</a>
+  </div>
+</section>
+
+<footer>
+  © 2026 [FreeLands] — جميع الحقوق محفوظة 🦖
+</footer>
+
+<script>
+  function copyIP(){
+    navigator.clipboard.writeText(document.getElementById('ip').textContent).then(()=>{
+      alert('تم نسخ عنوان السيرفر!');
+    });
+  }
+</script>
+</body>
+</html>
