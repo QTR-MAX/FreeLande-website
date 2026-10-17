@@ -57,6 +57,92 @@
   .btn-discord:hover{background:#4752c4}
 
   footer{text-align:center;padding:30px;color:var(--muted);border-top:1px solid var(--border);margin-top:40px;font-size:.9rem}
+  .ark-server {
+  max-width: 1000px;
+  margin: 30px auto;
+  padding: 20px;
+  color: #f5f5f5;
+  background: #15191f;
+  border: 1px solid #303844;
+  border-radius: 18px;
+  font-family: Arial, sans-serif;
+}
+.ark-heading {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 22px;
+}
+
+.ark-heading h2 {
+  margin: 0 0 6px;
+  font-size: 22px;
+}
+
+.ark-heading p {
+  margin: 0;
+  color: #aab4c0;
+}
+
+.ark-dot {
+  width: 13px;
+  height: 13px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: #888;
+}
+
+.ark-dot.online {
+  background: #35d07f;
+  box-shadow: 0 0 12px #35d07f66;
+}
+
+.ark-dot.offline {
+  background: #ff5252;
+}
+
+.ark-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.ark-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+  padding: 18px;
+  background: #202630;
+  border: 1px solid #343d49;
+  border-radius: 14px;
+}
+
+.ark-card span {
+  color: #bac4d0;
+  font-size: 14px;
+}
+
+.ark-card strong {
+  font-size: clamp(19px, 4vw, 27px);
+  overflow-wrap: anywhere;
+}
+
+.ark-card small,
+.ark-updated {
+  color: #9ba7b5;
+  font-size: 12px;
+}
+
+.ark-updated {
+  margin: 18px 0 0;
+}
+
+@media (min-width: 700px) {
+  .ark-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
 </style>
 </head>
 <body>
@@ -186,6 +272,75 @@
       alert('تم نسخ عنوان السيرفر!');
     });
   }
+  const ARK_WORKER_URL =
+  "https://ark-status-proxy.qtralyafei321123.workers.dev/server";
+
+async function updateArkServer() {
+  const statusEl = document.getElementById("ark-status");
+  const dotEl = document.getElementById("ark-dot");
+
+  try {
+    const response = await fetch(ARK_WORKER_URL, {
+      cache: "no-store"
+    });
+
+    if (!response.ok) {
+      throw new Error("HTTP " + response.status);
+    }
+
+    const result = await response.json();
+
+    if (!result.success || !result.data) {
+      throw new Error("Invalid server data");
+    }
+
+    const server = result.data;
+    const players = server.players || {};
+    const stats = server.stats_7d || {};
+    const online = server.status === "online";
+
+    document.getElementById("ark-players").textContent =
+      `${players.current ?? 0} / ${players.max ?? 0}`;
+
+    const mapNames = {
+      TheCenter_WP: "The Center"
+    };
+
+    document.getElementById("ark-map").textContent =
+      mapNames[server.map] || server.map || "غير معروف";
+
+    document.getElementById("ark-mode").textContent =
+      server.game_mode || "غير معروف";
+
+    document.getElementById("ark-uptime").textContent =
+      typeof stats.uptime === "number"
+        ? `${stats.uptime}%`
+        : "--";
+
+    statusEl.textContent = online
+      ? "السيرفر متصل"
+      : "السيرفر غير متصل";
+
+    dotEl.classList.toggle("online", online);
+    dotEl.classList.toggle("offline", !online);
+
+    document.getElementById("ark-updated").textContent =
+      "آخر تحديث: " + new Date().toLocaleTimeString();
+
+  } catch (error) {
+    statusEl.textContent = "تعذّر جلب بيانات السيرفر";
+    dotEl.classList.remove("online");
+    dotEl.classList.add("offline");
+
+    document.getElementById("ark-updated").textContent =
+      "تحقق من رابط Worker والاتصال بالـ API.";
+
+    console.error("ARK-Status error:", error);
+  }
+}
+
+updateArkServer();
+setInterval(updateArkServer, 60000);
 </script>
 </body>
 </html>
