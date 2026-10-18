@@ -342,21 +342,15 @@ async function updateArkServer() {
 
     };
 
-    if (getEl("ark-players")) {
+if (getEl("ark-players")) {
+  getEl("ark-players").textContent =
+    `${players.current ?? 0} / ${players.max ?? 0}`;
+}
 
-      getEl("ark-players").textContent =
-
-        `${players.current ?? 0} / ${players.max ?? 0}`;
-      }
-
-    if (getEl("ark-map")) {
-
-      getEl("ark-map").textContent =
-
-        mapNames[server.map]  server.map 
- "غير معروف";
-
-    }
+if (getEl("ark-map")) {
+  getEl("ark-map").textContent =
+    mapNames[server.map] || server.map || "غير معروف";
+}
 
     if (getEl("ark-mode")) {
 
