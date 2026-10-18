@@ -422,144 +422,169 @@ setInterval(updateArkServer, 60000);
 <footer>
   © 2026 [FreeLands] — جميع الحقوق محفوظة 🦖
 </footer>
-  <style>
-  :root{
-    --bg:#0d1117; --bg2:#161b22; --card:#1c2430; --accent:#2ea043; --accent2:#58a6ff;
-    --text:#e6edf3; --muted:#8b949e; --border:#2d333b;
-  }
-  *{margin:0;padding:0;box-sizing:border-box}
-  body{font-family:'Segoe UI',Tahoma,Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.8}
-  a{color:var(--accent2);text-decoration:none}
+<!-- FreeLands ARK Server Templates -->
+<!-- قالب عرض بيانات سيرفر ARK ASA -->
 
-  /* Header */
-  header{background:linear-gradient(135deg,#0d1117 0%,#12341c 100%);border-bottom:2px solid var(--accent);
-    padding:60px 20px;text-align:center}
-  header h1{font-size:2.4rem;color:#fff;text-shadow:0 2px 10px rgba(46,160,67,.5)}
-  header p{color:var(--muted);margin-top:10px;font-size:1.1rem}
+<section id="ark-servers" class="ark-section">
+  <h2 class="ark-heading">FreeLands Servers</h2>
+  <p class="ark-subheading">ARK: Survival Ascended</p>
 
-  /* Nav */
-  nav{background:var(--bg2);padding:12px;text-align:center;position:sticky;top:0;z-index:10;border-bottom:1px solid var(--border)}
-  nav a{color:var(--text);margin:0 14px;font-weight:bold}
-  nav a:hover{color:var(--accent)}
+  <div class="ark-grid">
+    <article class="ark-card">
 
-  section{max-width:1000px;margin:40px auto;padding:0 20px}
-  h2{color:var(--accent);border-right:4px solid var(--accent);padding-right:12px;margin-bottom:20px}
+      <div class="ark-card-top">
+        <span class="ark-label">SERVER STATUS</span>
+        <span id="ark-status" class="ark-status loading">
+          Loading...
+        </span>
+      </div>
 
-  /* Cards */
-  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px}
-  .card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;transition:.2s}
-  .card:hover{border-color:var(--accent);transform:translateY(-3px)}
-  .card h3{color:#fff;margin-bottom:8px}
-  .label{color:var(--muted);font-size:.9rem}
+      <h3 id="ark-server-name">Loading server...</h3>
+      <p id="ark-map" class="ark-map">Loading map...</p>
 
-  /* Server IP box */
-  .ip-box{background:#0d1117;border:1px dashed var(--accent);border-radius:10px;padding:14px;
-    font-family:Consolas,monospace;font-size:1.2rem;text-align:center;letter-spacing:1px}
-  .btn{display:inline-block;background:var(--accent);color:#fff;padding:10px 24px;border-radius:8px;
-    font-weight:bold;margin-top:10px;cursor:pointer;border:none;font-size:1rem}
-  .btn:hover{background:#3fb950}
+      <div class="ark-divider"></div>
 
-  .status{display:inline-block;padding:4px 14px;border-radius:20px;font-weight:bold;font-size:.9rem}
-  .online{background:rgb(66, 214, 8);color:#e3edee;border:1px solid #000000}
+      <div class="ark-stats">
+        <div>
+          <span class="ark-label">PLAYERS ONLINE</span>
+          <strong id="ark-players">--</strong>
+        </div>
+        <div>
+          <span class="ark-label">PLAYER LIMIT</span>
+          <strong id="ark-max-players">--</strong>
+        </div>
+      </div>
 
-  ul.rules{list-style:none}
-  ul.rules li{padding:10px 0;border-bottom:1px solid var(--border)}
-  ul.rules li::before{content:"🦖 ";margin-left:8px}
+      <div class="ark-progress">
+        <div id="ark-player-bar"
+             class="ark-progress-fill"></div>
+      </div>
 
-  /* Discord */
-  .discord{background:linear-gradient(135deg,#1c2430,#2b3a55);border:1px solid var(--border);border-radius:16px;
-    padding:40px;text-align:center}
-  .discord h2{border:none;padding:0;color:#fff}
-  .btn-discord{display:inline-block;background:#5865F2;color:#fff;padding:14px 36px;border-radius:10px;
-    font-size:1.2rem;font-weight:bold;margin-top:16px}
-  .btn-discord:hover{background:#4752c4}
+      <p class="ark-footer">
+        <span>Server population</span>
+        <span id="ark-player-percent">--%</span>
+      </p>
 
-  footer{text-align:center;padding:30px;color:var(--muted);border-top:1px solid var(--border);margin-top:40px;font-size:.9rem}
-  .ark-server {
-  max-width: 1000px;
+    </article>
+  </div>
+</section>
+
+<style>
+.ark-section {
+  max-width: 1100px;
   margin: 30px auto;
   padding: 20px;
+  box-sizing: border-box;
   color: #f5f5f5;
-  background: #15191f;
-  border: 1px solid #303844;
-  border-radius: 18px;
   font-family: Arial, sans-serif;
 }
+
 .ark-heading {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 22px;
+  margin-bottom: 8px;
+  font-size: 28px;
+  font-weight: 800;
 }
 
-.ark-heading h2 {
-  margin: 0 0 6px;
-  font-size: 22px;
-}
-
-.ark-heading p {
-  margin: 0;
-  color: #aab4c0;
-}
-
-.ark-dot {
-  width: 13px;
-  height: 13px;
-  flex-shrink: 0;
-  border-radius: 50%;
-  background: #888;
-}
-
-.ark-dot.online {
-  background: #35d07f;
-  box-shadow: 0 0 12px #35d07f66;
-}
-
-.ark-dot.offline {
-  background: #ff5252;
+.ark-subheading {
+  color: #a7a7a7;
+  margin-bottom: 24px;
 }
 
 .ark-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 14px;
+  grid-template-columns:
+    repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+  gap: 20px;
 }
 
 .ark-card {
+  background: linear-gradient(145deg, #1d2229, #101318);
+  border: 1px solid #383e47;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 8px 25px #0003;
+}
+
+.ark-card-top,
+.ark-stats,
+.ark-footer {
   display: flex;
-  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
   gap: 12px;
-  min-width: 0;
-  padding: 18px;
-  background: #202630;
-  border: 1px solid #343d49;
-  border-radius: 14px;
 }
 
-.ark-card span {
-  color: #bac4d0;
-  font-size: 14px;
+.ark-label {
+  color: #a5abb5;
+  font-size: 11px;
+  letter-spacing: 1px;
 }
 
-.ark-card strong {
-  font-size: clamp(19px, 4vw, 27px);
+.ark-status {
+  padding: 6px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: bold;
+}
+
+.ark-status.online {
+  color: #65f2a0;
+  background: #163c2a;
+}
+
+.ark-status.offline {
+  color: #ff8585;
+  background: #451f24;
+}
+
+.ark-status.loading {
+  color: #f2d27a;
+  background: #41371e;
+}
+
+.ark-card h3 {
+  font-size: 21px;
+  margin: 24px 0 8px;
   overflow-wrap: anywhere;
 }
 
-.ark-card small,
-.ark-updated {
-  color: #9ba7b5;
+.ark-map {
+  color: #d7b56d;
+  margin-bottom: 20px;
+}
+
+.ark-divider {
+  height: 1px;
+  background: #343943;
+  margin: 20px 0;
+}
+
+.ark-stats strong {
+  display: block;
+  font-size: 27px;
+  margin-top: 8px;
+}
+
+.ark-progress {
+  height: 8px;
+  background: #333943;
+  border-radius: 10px;
+  overflow: hidden;
+  margin-top: 22px;
+}
+
+.ark-progress-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #b58a36, #f4d58b);
+  border-radius: 10px;
+  transition: width .4s ease;
+}
+
+.ark-footer {
+  color: #a5abb5;
   font-size: 12px;
-}
-
-.ark-updated {
-  margin: 18px 0 0;
-}
-
-@media (min-width: 700px) {
-  .ark-grid {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-  }
+  margin-bottom: 0;
 }
 </style>
 </body>
