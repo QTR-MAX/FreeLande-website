@@ -272,74 +272,163 @@
       alert('تم نسخ عنوان السيرفر!');
     });
   }
-  const ARK_WORKER_URL =
+const ARK_WORKER_URL =
+
   "https://arkstatus.com/api/v1/servers/4308362151/preview";
 
 async function updateArkServer() {
-  const statusEl = document.getElementById("ark-status");
-  const dotEl = document.getElementById("ark-dot");
+
+  const getEl = (id) => document.getElementById(id);
+
+  const statusEl = getEl("ark-status");
+
+  const dotEl = getEl("ark-dot");
 
   try {
+
     const response = await fetch(ARK_WORKER_URL, {
+
       cache: "no-store"
+
     });
 
     if (!response.ok) {
+
       throw new Error("HTTP " + response.status);
+
     }
 
     const result = await response.json();
 
-    if (!result.success || !result.data) {
+    if (!result?.success || !result?.data) {
+
       throw new Error("Invalid server data");
+
     }
 
     const server = result.data;
-    const players = server.players || {};
-    const stats = server.stats_7d || {};
-    const online = server.status === "online";
 
-    document.getElementById("ark-players").textContent =
-      `${players.current ?? 0} / ${players.max ?? 0}`;
+    const players = server.players || {};
+
+    const stats = server.stats_7d || {};
+
+    const online = String(server.status || "").toLowerCase() === "online";
 
     const mapNames = {
-      TheCenter_WP: "The Center"
+
+      TheCenter_WP: "The Center",
+
+      LostColony_WP: "Lost Colony",
+
+      ScorchedEarth_WP: "Scorched Earth",
+
+      Aberration_WP: "Aberration",
+
+      Extinction_WP: "Extinction",
+
+      TheIsland_WP: "The Island",
+
+      Ragnarok_WP: "Ragnarok",
+
+      Valguero_WP: "Valguero",
+
+      CrystalIsles_WP: "Crystal Isles",
+
+      Fjordur_WP: "Fjordur",
+
+      Genesis_WP: "Genesis",
+
+      Genesis2_WP: "Genesis Part 2"
+
     };
 
-    document.getElementById("ark-map").textContent =
-      mapNames[server.map] || server.map || "غير معروف";
+    if (getEl("ark-players")) {
 
-    document.getElementById("ark-mode").textContent =
-      server.game_mode || "غير معروف";
+      getEl("ark-players").textContent =
 
-    document.getElementById("ark-uptime").textContent =
-      typeof stats.uptime === "number"
-        ? `${stats.uptime}%`
-        : "--";
+        `${players.current ?? 0} / ${players.max ?? 0}`;
+      }
 
-    statusEl.textContent = online
-      ? "السيرفر متصل"
-      : "السيرفر غير متصل";
+    if (getEl("ark-map")) {
 
-    dotEl.classList.toggle("online", online);
-    dotEl.classList.toggle("offline", !online);
+      getEl("ark-map").textContent =
 
-    document.getElementById("ark-updated").textContent =
-      "آخر تحديث: " + new Date().toLocaleTimeString();
+        mapNames[server.map]  server.map 
+ "غير معروف";
+
+    }
+
+    if (getEl("ark-mode")) {
+
+      getEl("ark-mode").textContent =
+
+        server.game_mode || "غير معروف";
+
+    }
+
+    if (getEl("ark-uptime")) {
+
+      getEl("ark-uptime").textContent =
+
+        typeof stats.uptime === "number"
+
+          ? ${stats.uptime}%
+
+          : "--";
+
+    }
+
+    if (statusEl) {
+
+      statusEl.textContent = online
+
+        ? "السيرفر متصل"
+
+        : "السيرفر غير متصل";
+
+    }
+
+    if (dotEl) {
+
+      dotEl.classList.toggle("online", online);
+
+      dotEl.classList.toggle("offline", !online);
+
+    }
+
+    if (getEl("ark-updated")) {
+
+      getEl("ark-updated").textContent =
+
+        "آخر تحديث: " +
+
+        new Date().toLocaleTimeString("ar-QA");
+
+    }
 
   } catch (error) {
-    statusEl.textContent = "تعذّر جلب بيانات السيرفر";
-    dotEl.classList.remove("online");
-    dotEl.classList.add("offline");
-
-    document.getElementById("ark-updated").textContent =
-      "تحقق من رابط Worker والاتصال بالـ API.";
 
     console.error("ARK-Status error:", error);
+
+    if (statusEl) {
+
+      statusEl.textContent = "تعذّر جلب بيانات السيرفر";
+
+    }
+
+    if (dotEl) {
+      dotEl.classList.remove("online");
+      dotEl.classList.add("offline");
+    }
+    if (getEl("ark-updated")) {
+      getEl("ark-updated").textContent =
+        "تعذّر التحديث. تحقق من اتصال API.";
+    }
   }
 }
 
 updateArkServer();
+
 setInterval(updateArkServer, 60000);
 </script>
 </body>
