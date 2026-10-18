@@ -262,13 +262,146 @@
   </div>
 </section>
 <section>
-    <div class="card">
-      <h3> LEDAR BOARD 🌟 </h3>
-      <p style="font-size:1.6rem;font-weight:bold;color:#b6b305">1.</p>
-      <p style="font-size:1.6rem;font-weight:bold;color:#10a5ca">2.</p>
-      <p style="font-size:1.6rem;font-weight:bold;color:#dd6c0f">3.</p>
-      <span class="label">Only The Top Three Will Show Up Here</span>
-    </div>
+  <style>
+  :root{
+    --bg:#0d1117; --bg2:#161b22; --card:#1c2430; --accent:#2ea043; --accent2:#58a6ff;
+    --text:#e6edf3; --muted:#8b949e; --border:#2d333b;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Segoe UI',Tahoma,Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.8}
+  a{color:var(--accent2);text-decoration:none}
+
+  /* Header */
+  header{background:linear-gradient(135deg,#0d1117 0%,#12341c 100%);border-bottom:2px solid var(--accent);
+    padding:60px 20px;text-align:center}
+  header h1{font-size:2.4rem;color:#fff;text-shadow:0 2px 10px rgba(46,160,67,.5)}
+  header p{color:var(--muted);margin-top:10px;font-size:1.1rem}
+
+  /* Nav */
+  nav{background:var(--bg2);padding:12px;text-align:center;position:sticky;top:0;z-index:10;border-bottom:1px solid var(--border)}
+  nav a{color:var(--text);margin:0 14px;font-weight:bold}
+  nav a:hover{color:var(--accent)}
+
+  section{max-width:1000px;margin:40px auto;padding:0 20px}
+  h2{color:var(--accent);border-right:4px solid var(--accent);padding-right:12px;margin-bottom:20px}
+
+  /* Cards */
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;transition:.2s}
+  .card:hover{border-color:var(--accent);transform:translateY(-3px)}
+  .card h3{color:#fff;margin-bottom:8px}
+  .label{color:var(--muted);font-size:.9rem}
+
+  /* Server IP box */
+  .ip-box{background:#0d1117;border:1px dashed var(--accent);border-radius:10px;padding:14px;
+    font-family:Consolas,monospace;font-size:1.2rem;text-align:center;letter-spacing:1px}
+  .btn{display:inline-block;background:var(--accent);color:#fff;padding:10px 24px;border-radius:8px;
+    font-weight:bold;margin-top:10px;cursor:pointer;border:none;font-size:1rem}
+  .btn:hover{background:#3fb950}
+
+  .status{display:inline-block;padding:4px 14px;border-radius:20px;font-weight:bold;font-size:.9rem}
+  .online{background:rgb(66, 214, 8);color:#e3edee;border:1px solid #000000}
+
+  ul.rules{list-style:none}
+  ul.rules li{padding:10px 0;border-bottom:1px solid var(--border)}
+  ul.rules li::before{content:"🦖 ";margin-left:8px}
+
+  /* Discord */
+  .discord{background:linear-gradient(135deg,#1c2430,#2b3a55);border:1px solid var(--border);border-radius:16px;
+    padding:40px;text-align:center}
+  .discord h2{border:none;padding:0;color:#fff}
+  .btn-discord{display:inline-block;background:#5865F2;color:#fff;padding:14px 36px;border-radius:10px;
+    font-size:1.2rem;font-weight:bold;margin-top:16px}
+  .btn-discord:hover{background:#4752c4}
+
+  footer{text-align:center;padding:30px;color:var(--muted);border-top:1px solid var(--border);margin-top:40px;font-size:.9rem}
+  .ark-server {
+  max-width: 1000px;
+  margin: 30px auto;
+  padding: 20px;
+  color: #f5f5f5;
+  background: #15191f;
+  border: 1px solid #303844;
+  border-radius: 18px;
+  font-family: Arial, sans-serif;
+}
+.ark-heading {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 22px;
+}
+
+.ark-heading h2 {
+  margin: 0 0 6px;
+  font-size: 22px;
+}
+
+.ark-heading p {
+  margin: 0;
+  color: #aab4c0;
+}
+
+.ark-dot {
+  width: 13px;
+  height: 13px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: #888;
+}
+
+.ark-dot.online {
+  background: #35d07f;
+  box-shadow: 0 0 12px #35d07f66;
+}
+
+.ark-dot.offline {
+  background: #ff5252;
+}
+
+.ark-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.ark-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+  padding: 18px;
+  background: #202630;
+  border: 1px solid #343d49;
+  border-radius: 14px;
+}
+
+.ark-card span {
+  color: #bac4d0;
+  font-size: 14px;
+}
+
+.ark-card strong {
+  font-size: clamp(19px, 4vw, 27px);
+  overflow-wrap: anywhere;
+}
+
+.ark-card small,
+.ark-updated {
+  color: #9ba7b5;
+  font-size: 12px;
+}
+
+.ark-updated {
+  margin: 18px 0 0;
+}
+
+@media (min-width: 700px) {
+  .ark-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+</style>
   <script>
   function copyIP(){
     navigator.clipboard.writeText(document.getElementById('ip').textContent).then(()=>{
