@@ -352,13 +352,10 @@ if (getEl("ark-map")) {
     mapNames[server.map] || server.map || "غير معروف";
 }
 
-    if (getEl("ark-mode")) {
-
-      getEl("ark-mode").textContent =
-
-        server.game_mode || "غير معروف";
-
-    }
+if (getEl("ark-mode")) {
+  getEl("ark-mode").textContent =
+    server.game_mode || "غير معروف";
+}
 
     if (getEl("ark-uptime")) {
 
