@@ -408,30 +408,6 @@
 </section>
 <section>
   <script>
-    """FreeLand team leaderboard for the ASA log formats verified on this server.
-
-Usage (run with the same Python interpreter as test_logs.py):
-    python Leaderboard.py --test     # Preview saved rcon_log_sample_*.txt files.
-    python Leaderboard.py            # Collect live events until Ctrl+C.
-    python Leaderboard.py --once     # Collect one live response.
-    python Leaderboard.py --show     # Show saved live scores without connecting.
-
-Scoring: player kill +1.30, enemy structure destroyed +0.07, player death -1.00.
-Points belong to the tribe ID in the event, even if a player later changes tribe.
-The preview uses an in-memory database and never imports test scores into live.
-Live data and leaderboard.json are stored in the adjacent freeland_data folder.
-
-Only a confirmed human death can validate a 'Your Tribe killed' report. Creature
-kill reports alone do not earn points. Global copies of tribe deaths are ignored.
-One attacker structure report earns points; the victim's copy earns no penalty.
-Unrecognized formats stay in the private raw log database for later inspection.
-
-Live collection uses this server's observed, consumed GetGameLog batches. Use one
-collector, and do not run test_logs.py or another GetGameLog poller alongside it.
-Keep the collector running: the server's finite buffer cannot provide a complete
-history after a long outage. The live RCON path still needs a test on your PC.
-"""
-
 from __future__ import annotations
 
 import argparse
