@@ -157,6 +157,7 @@
   <a href="#status">الحالة</a>
   <a href="#mods"> المودات الاساسية</a>
   <a href="#rules">القوانين</a>
+  <a href="#leaderboard">الليدر بورد</a>
   <a href="#discord">الديسكورد</a>
 </nav>
 
@@ -406,15 +407,203 @@
     </ul>
   </div>
 </section>
-<section>
-    <div class="card">
-      <h3> LEDAR BOARD 🌟 </h3>
-      <p style="font-size:1.6rem;font-weight:bold;color:#b6b305">1.</p>
-      <p style="font-size:1.6rem;font-weight:bold;color:#10a5ca">2.</p>
-      <p style="font-size:1.6rem;font-weight:bold;color:#dd6c0f">3.</p>
-      <span class="label">Only The Top Three Will Show Up Here</span>
+<!-- FREELAND LEADERBOARD START -->
+<section id="leaderboard" aria-labelledby="freeland-leaderboard-title">
+  <div class="card freeland-board">
+    <div class="freeland-board-heading">
+      <div>
+        <h2 id="freeland-leaderboard-title">🏆 الليدر بورد</h2>
+        <p class="label">أفضل ثلاث قبائل حسب مجموع النقاط</p>
+      </div>
+      <span id="freeland-board-badge" class="freeland-board-badge">نتائج محفوظة</span>
     </div>
+    <div id="freeland-board-teams" class="freeland-board-teams" hidden></div>
+    <p id="freeland-board-message" class="freeland-board-message" role="status">جارٍ تحميل النتائج...</p>
+    <p id="freeland-board-updated" class="label"></p>
+    <p class="freeland-board-note">النتائج حسب آخر ملف نقاط مرفوع إلى الموقع.</p>
+    <div class="freeland-board-rules" aria-label="طريقة حساب النقاط">
+      <span>قتلة لاعب <bdi dir="ltr">+1.30</bdi></span>
+      <span>قطعة مبنى مدمرة <bdi dir="ltr">+0.07</bdi></span>
+      <span class="freeland-board-penalty">موت لاعب <bdi dir="ltr">−1.00</bdi></span>
+    </div>
+  </div>
 </section>
+<style>
+  #leaderboard { scroll-margin-top: 90px; }
+  #leaderboard [hidden] { display: none !important; }
+  #leaderboard .freeland-board:hover { transform: none; border-color: var(--border); }
+  #leaderboard .freeland-board-heading {
+    display: flex; justify-content: space-between; align-items: center;
+    flex-wrap: wrap; gap: 14px; margin-bottom: 22px;
+  }
+  #leaderboard h2 { margin-bottom: 5px; }
+  #leaderboard .freeland-board-badge {
+    padding: 5px 12px; border: 1px solid #345843; border-radius: 20px;
+    color: #8cdea4; background: #173022; font-size: .8rem;
+  }
+  #leaderboard .freeland-board-badge[data-error="true"] {
+    color: #f2cf8d; border-color: #705b35; background: #342b1b;
+  }
+  #leaderboard .freeland-board-teams {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+    gap: 16px; margin-bottom: 18px;
+  }
+  #leaderboard .freeland-team {
+    min-width: 0; padding: 20px; border: 1px solid #394454;
+    border-top: 3px solid var(--rank-color, #58a6ff); border-radius: 12px;
+    background: linear-gradient(145deg, #202b39, #111820);
+  }
+  #leaderboard .freeland-team[data-rank="1"] { --rank-color: #e8c568; }
+  #leaderboard .freeland-team[data-rank="2"] { --rank-color: #7bc4ec; }
+  #leaderboard .freeland-team[data-rank="3"] { --rank-color: #dba076; }
+  #leaderboard .freeland-team-rank { color: var(--rank-color); font-size: .85rem; }
+  #leaderboard .freeland-team-name { margin: 8px 0 4px; font-size: 1.15rem; overflow-wrap: anywhere; }
+  #leaderboard .freeland-team-points { margin: 12px 0 18px; }
+  #leaderboard .freeland-team-points strong {
+    color: var(--rank-color); font-size: 2.3rem; font-variant-numeric: tabular-nums;
+  }
+  #leaderboard .freeland-team-points span { margin-inline-start: 8px; color: var(--muted); font-size: .85rem; }
+  #leaderboard .freeland-team-stats {
+    display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 5px;
+    border-top: 1px solid #35404d; padding-top: 12px; text-align: center;
+  }
+  #leaderboard .freeland-team-stats dt { color: #aebdca; font-size: .75rem; }
+  #leaderboard .freeland-team-stats dd { margin: 4px 0 0; font-weight: 700; font-variant-numeric: tabular-nums; }
+  #leaderboard .freeland-board-message { padding: 16px 0; color: #becbd8; }
+  #leaderboard .freeland-board-note { color: var(--muted); font-size: .8rem; margin-top: 4px; }
+  #leaderboard .freeland-board-rules {
+    display: flex; flex-wrap: wrap; gap: 8px; padding-top: 18px; margin-top: 16px;
+    border-top: 1px solid var(--border); font-size: .8rem;
+  }
+  #leaderboard .freeland-board-rules span {
+    padding: 5px 10px; border: 1px solid #345843; border-radius: 7px; color: #9ce0af;
+  }
+  #leaderboard .freeland-board-rules bdi { margin-inline-start: 6px; font-weight: 700; }
+  #leaderboard .freeland-board-rules .freeland-board-penalty { color: #ffada5; border-color: #6c423f; }
+</style>
+<script>
+(() => {
+  "use strict";
+  const root = document.getElementById("leaderboard");
+  if (!root) return;
+  const teamsEl = document.getElementById("freeland-board-teams");
+  const messageEl = document.getElementById("freeland-board-message");
+  const updatedEl = document.getElementById("freeland-board-updated");
+  const badgeEl = document.getElementById("freeland-board-badge");
+  const dataUrl = new URL("./FreeLand-Leaderboard/freeland_data/leaderboard.json", document.baseURI);
+  let loading = false;
+  let hasSavedResults = false;
+
+  function node(tag, className, value) {
+    const element = document.createElement(tag);
+    if (className) element.className = className;
+    if (value !== undefined) element.textContent = String(value);
+    return element;
+  }
+
+  function validate(data) {
+    if (!data || data.schema_version !== 1 || !Array.isArray(data.teams)) {
+      throw new Error("Unsupported leaderboard data");
+    }
+    const ids = new Set();
+    const teams = data.teams.map((team) => {
+      if (!team || typeof team.tribe_id !== "string" || !team.tribe_id.trim() ||
+          typeof team.tribe_name !== "string" || !team.tribe_name.trim() ||
+          !Number.isSafeInteger(team.points_units) ||
+          !["kills", "structures_destroyed", "deaths"].every((key) =>
+            Number.isSafeInteger(team[key]) && team[key] >= 0) ||
+          ids.has(team.tribe_id)) {
+        throw new Error("Invalid leaderboard team");
+      }
+      ids.add(team.tribe_id);
+      return team;
+    });
+    teams.sort((a, b) => b.points_units - a.points_units);
+    const updated = new Date(data.generated_at_utc);
+    if (typeof data.generated_at_utc !== "string" || !Number.isFinite(updated.getTime())) {
+      throw new Error("Invalid results timestamp");
+    }
+    return { teams: teams.slice(0, 3), updated: updated };
+  }
+
+  function render(data) {
+    const board = validate(data);
+    const cards = document.createDocumentFragment();
+    board.teams.forEach((team, index) => {
+      const rank = Number.isSafeInteger(team.rank) && team.rank > 0 ? team.rank : index + 1;
+      const card = node("article", "freeland-team");
+      card.dataset.rank = String(rank);
+      card.append(node("p", "freeland-team-rank", "المركز " + rank));
+      const name = node("h3", "freeland-team-name");
+      const nameText = node("bdi", "", team.tribe_name);
+      nameText.dir = "auto";
+      name.append(nameText);
+      card.append(name);
+      const points = node("p", "freeland-team-points");
+      const amount = node("strong", "", (team.points_units / 100).toFixed(2));
+      amount.dir = "ltr";
+      amount.style.display = "inline-block";
+      points.append(amount, node("span", "", "نقطة"));
+      card.append(points);
+      const stats = node("dl", "freeland-team-stats");
+      [["قتلات", team.kills], ["مبانٍ مدمرة", team.structures_destroyed], ["وفيات", team.deaths]]
+        .forEach((stat) => {
+          const group = node("div");
+          group.append(node("dt", "", stat[0]), node("dd", "", stat[1]));
+          stats.append(group);
+        });
+      card.append(stats);
+      cards.append(card);
+    });
+    teamsEl.replaceChildren(cards);
+    teamsEl.hidden = board.teams.length === 0;
+    messageEl.hidden = board.teams.length > 0;
+    messageEl.textContent = board.teams.length ? "" : "لا توجد نقاط مسجلة حتى الآن.";
+    const timestamp = node("time", "", board.updated.toLocaleString("ar-QA"));
+    timestamp.dateTime = board.updated.toISOString();
+    timestamp.title = board.updated.toISOString();
+    updatedEl.replaceChildren(document.createTextNode("آخر تحديث للنتائج: "), timestamp);
+    badgeEl.textContent = "نتائج محفوظة";
+    badgeEl.dataset.error = "false";
+    hasSavedResults = true;
+  }
+
+  async function updateLeaderboard() {
+    if (loading) return;
+    loading = true;
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 10000);
+    try {
+      dataUrl.searchParams.set("v", String(Date.now()));
+      const response = await fetch(dataUrl, {
+        cache: "no-store", headers: { Accept: "application/json" }, signal: controller.signal
+      });
+      if (!response.ok) throw new Error("HTTP " + response.status);
+      render(await response.json());
+    } catch (error) {
+      badgeEl.textContent = "تعذّر تحديث النتائج";
+      badgeEl.dataset.error = "true";
+      messageEl.hidden = false;
+      messageEl.textContent = hasSavedResults
+        ? "تعذّر التحديث الآن. تُعرض آخر نتائج متاحة."
+        : "النتائج غير متاحة حاليًا. حاول تحديث الصفحة لاحقًا.";
+      console.warn("FreeLand leaderboard:", error);
+    } finally {
+      clearTimeout(timeout);
+      loading = false;
+    }
+  }
+
+  updateLeaderboard();
+  setInterval(() => {
+    if (!document.hidden) updateLeaderboard();
+  }, 30000);
+  document.addEventListener("visibilitychange", () => {
+    if (!document.hidden) updateLeaderboard();
+  });
+})();
+</script>
+<!-- FREELAND LEADERBOARD END -->
 <!-- ═══ الديسكورد ═══ -->
 <section id="discord">
   <div class="discord">
