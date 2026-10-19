@@ -1,0 +1,4 @@
+2026.10.19_05.13.46: Tribe Tribe of Bob, ID 1186504558: Day 79, 19:26:26: <RichColor Color="1, 0, 0, 1">Your 'Metal Triangle Foundation' was destroyed!</>)
+2026.10.19_05.13.46: Tribe Tribe of Maxicano, ID 1204381789: Day 79, 19:26:26: <RichColor Color="1, 0.75, 0.3, 1">Maxicano - Lvl 99 destroyed their 'Metal Triangle Foundation (Tribe of Bob)')!</>)
+ 
+ 

@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "generated_at_utc": "2026-10-19T05:55:02+00:00",
+  "server": {
+    "host": "31.214.216.36",
+    "rcon_port": 11040
+  },
+  "scoring": {
+    "player_kill": 1.3,
+    "structure": 0.07,
+    "player_death": -1
+  },
+  "confirmed_effects": 4,
+  "unconfirmed_kill_reports": 0,
+  "teams": [
+    {
+      "tribe_id": "1186504558",
+      "tribe_name": "Tribe of Bob",
+      "kills": 0,
+      "structures_destroyed": 4,
+      "deaths": 0,
+      "points_units": 28,
+      "points": 0.28,
+      "points_display": "0.28",
+      "rank": 1
+    },
+    {
+      "tribe_id": "1433996977",
+      "tribe_name": "Tribe of Maxicano",
+      "kills": 0,
+      "structures_destroyed": 0,
+      "deaths": 0,
+      "points_units": 0,
+      "points": 0.0,
+      "points_display": "0.00",
+      "rank": 2
+    }
+  ]
+}

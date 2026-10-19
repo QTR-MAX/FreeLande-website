@@ -1,0 +1,10 @@
+2026.10.19_05.05.40: QxM_22 [UniqueNetId:0002d1a2fa7b4b28bc358d2cb9995dd4 Platform:PS5] joined this ARK!
+2026.10.19_05.06.10: AdminCmd: GiveCreativeMode (PlayerName: QxM_22, ARKID: 59240525, PlatformID: 0002d1a2fa7b4b28bc358d2cb9995dd4)
+2026.10.19_05.06.26: AdminCmd: GiveCreativeMode (PlayerName: QxM_22, ARKID: 59240525, PlatformID: 0002d1a2fa7b4b28bc358d2cb9995dd4)
+2026.10.19_05.06.37: Tribe Long Hand, ID 1905942817: Day 79, 17:54:46: <RichColor Color="1, 0, 0, 1">Tribemember Long Hand - Lvl 1 was killed by Maxicano - Lvl 99-59240525 (Tribe of Bob)!</>)
+2026.10.19_05.06.37: Tribe Tribe of Bob, ID 1186504558: Day 79, 17:54:46: <RichColor Color="1, 0, 1, 1">Your Tribe killed Long Hand - Lvl 1 (Long Hand)!</>)
+2026.10.19_05.06.37: Long Hand - Lvl 1 (Long Hand) was killed by Maxicano - Lvl 99 (Tribe of Bob)! [KillerSID: 59240525]
+2026.10.19_05.07.38: YQQYH [UniqueNetId:00023e9fd936463d8fa443565b76dfba Platform:PS5] left this ARK!
+2026.10.19_05.07.43: AdminCmd: GiveCreativeMode (PlayerName: QxM_22, ARKID: 59240525, PlatformID: 0002d1a2fa7b4b28bc358d2cb9995dd4)
+ 
+ 
