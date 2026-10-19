@@ -3,7 +3,23 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="referrer" content="no-referrer">
 <title>FreeLands</title>
+<script>
+// Remove OAuth response parameters before any profile images or API calls load.
+(() => {
+  const url = new URL(window.location.href);
+  const keys = ["code", "state", "iss", "error", "error_description", "error_uri"];
+  if (!keys.some(key => url.searchParams.has(key))) return;
+  window.__freelandAuthCallback = {
+    code: url.searchParams.get("code"), state: url.searchParams.get("state"),
+    issuer: url.searchParams.get("iss"), error: url.searchParams.get("error")
+  };
+  for (const key of keys) url.searchParams.delete(key);
+  url.hash = "account";
+  history.replaceState(null, "", url.pathname + url.search + url.hash);
+})();
+</script>
 <style>
   :root{
     --bg:#0d1117; --bg2:#161b22; --card:#1c2430; --accent:#2ea043; --accent2:#58a6ff;
@@ -143,6 +159,44 @@
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }
+
+  /* Discord account */
+  #account { scroll-margin-top: 95px; }
+  #account [hidden] { display: none !important; }
+  #account .freeland-auth-card { display: grid; gap: 20px; padding: 26px; }
+  #account .freeland-auth-card:hover { transform: none; border-color: var(--border); }
+  #account h2 { margin-bottom: 8px; }
+  #account .freeland-auth-eyebrow { color: #a5adff; font-size: .8rem; letter-spacing: 1px; }
+  #account .freeland-auth-button { padding: 11px 20px; border: 1px solid transparent; border-radius: 9px;
+    font: 600 1rem 'Segoe UI', Tahoma, Arial, sans-serif; cursor: pointer; line-height: 1.6; }
+  #account .freeland-auth-primary { color: #fff; background: #5865f2; }
+  #account .freeland-auth-primary:hover { background: #4752c4; }
+  #account .freeland-auth-button:disabled { opacity: .65; cursor: wait; }
+  #account .freeland-auth-button:focus-visible { outline: 3px solid #a5adff; outline-offset: 4px; }
+  #account .freeland-auth-secondary { color: var(--text); border-color: #465166; background: transparent; }
+  #account .freeland-auth-secondary:hover { background: #2b3444; }
+  #account .freeland-auth-profile { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; }
+  #account .freeland-auth-avatar-wrap { width: 56px; height: 56px; flex: 0 0 56px; }
+  #account .freeland-auth-avatar { display: block; width: 56px; height: 56px; border-radius: 50%; object-fit: cover;
+    border: 2px solid #6d78ff; }
+  #account .freeland-auth-fallback { display: grid; place-items: center; width: 56px; height: 56px;
+    border-radius: 50%; background: #5865f2; color: #fff; font-size: 1.5rem; font-weight: 700; }
+  #account .freeland-auth-user-copy { display: grid; gap: 1px; flex: 1; min-width: 120px; overflow-wrap: anywhere; }
+  #account .freeland-auth-user-copy strong { font-size: 1.15rem; color: #fff; }
+  #account .freeland-auth-user-copy small { color: #65d49d; }
+  #account .freeland-auth-message { padding: 11px 14px; border: 1px solid #335a48; border-radius: 9px;
+    background: #153328; color: #b9ebce; font-size: .92rem; overflow-wrap: anywhere; }
+  #account .freeland-auth-message[data-error="true"] { background: #382024; border-color: #744047; color: #ffb8bd; }
+  @media (min-width: 700px) {
+    #account .freeland-auth-card { grid-template-columns: minmax(0, 1fr) auto; align-items: center; }
+    #account .freeland-auth-message { grid-column: 1 / -1; }
+  }
+  @media (max-width: 600px) {
+    nav { display: flex; justify-content: center; flex-wrap: wrap; gap: 8px 14px; }
+    nav a { margin: 0; font-size: .9rem; }
+    #account .freeland-auth-card { padding: 20px; }
+    #account .freeland-auth-primary { width: 100%; }
+  }
 </style>
 </head>
 <body>
@@ -159,7 +213,37 @@
   <a href="#rules">القوانين</a>
   <a href="#leaderboard">الليدر بورد</a>
   <a href="#discord">الديسكورد</a>
+  <a href="#account">حسابي</a>
 </nav>
+
+<!-- FREELAND DISCORD ACCOUNT START -->
+<section id="account" aria-labelledby="freeland-auth-title">
+  <div class="card freeland-auth-card">
+    <div>
+      <span class="freeland-auth-eyebrow">FREELANDS ACCOUNT</span>
+      <h2 id="freeland-auth-title">حسابك في FreeLands</h2>
+      <p class="label">سجّل دخولك بحساب Discord الخاص بك.</p>
+    </div>
+    <div id="freeland-auth-guest">
+      <button id="freeland-auth-login" class="freeland-auth-button freeland-auth-primary" type="button" disabled>جارٍ التحقق...</button>
+    </div>
+    <div id="freeland-auth-profile" class="freeland-auth-profile" hidden>
+      <div class="freeland-auth-avatar-wrap" aria-hidden="true">
+        <img id="freeland-auth-avatar" class="freeland-auth-avatar" alt="" width="56" height="56" referrerpolicy="no-referrer" hidden>
+        <span id="freeland-auth-fallback" class="freeland-auth-fallback">F</span>
+      </div>
+      <div class="freeland-auth-user-copy">
+        <strong id="freeland-auth-display-name" dir="auto"></strong>
+        <bdi id="freeland-auth-username" class="label" dir="ltr"></bdi>
+        <small>تم الدخول بحساب Discord</small>
+      </div>
+      <button id="freeland-auth-logout" class="freeland-auth-button freeland-auth-secondary" type="button">تسجيل الخروج</button>
+    </div>
+    <p id="freeland-auth-message" class="freeland-auth-message" role="status" aria-live="polite" hidden></p>
+  </div>
+</section>
+<!-- FREELAND DISCORD ACCOUNT END -->
+
 
 <!-- ═══ معلومات السيرفر ═══ -->
 <section id="info">
@@ -780,5 +864,263 @@ setInterval(updateArkServer, 60000);
 <footer>
   © 2026 [FreeLands] — جميع الحقوق محفوظة 🦖
 </footer>
+<script>
+(() => {
+  "use strict";
+  const API = "https://source.qtralyafei321123.workers.dev";
+  const FLOW_KEY = "freeland.discord.flow.v1";
+  const SESSION_KEY = "freeland.discord.session.v1";
+  const guest = document.getElementById("freeland-auth-guest");
+  const profile = document.getElementById("freeland-auth-profile");
+  const loginButton = document.getElementById("freeland-auth-login");
+  const logoutButton = document.getElementById("freeland-auth-logout");
+  const message = document.getElementById("freeland-auth-message");
+  const avatar = document.getElementById("freeland-auth-avatar");
+  const fallback = document.getElementById("freeland-auth-fallback");
+  let session = null;
+  let busy = true;
+  let lastCheck = 0;
+  const callback = window.__freelandAuthCallback;
+  delete window.__freelandAuthCallback;
+
+  const messages = {
+    auth_not_configured: "تسجيل الدخول غير جاهز حاليًا. حاول لاحقًا.",
+    database_not_bound: "خدمة الحسابات غير متاحة حاليًا. حاول لاحقًا.",
+    auth_storage_unavailable: "تعذّر الوصول إلى حسابك الآن. حاول مرة أخرى.",
+    rate_limited: "محاولات كثيرة. انتظر عشر دقائق ثم حاول مجددًا.",
+    auth_state_invalid: "انتهت محاولة الدخول أو استُخدمت مسبقًا. ابدأ من زر الدخول مجددًا.",
+    invalid_auth_request: "تعذّر التحقق من محاولة الدخول. ابدأ مجددًا من زر Discord.",
+    discord_authorization_failed: "لم يكتمل تأكيد الدخول من Discord. حاول مجددًا.",
+    discord_unavailable: "تعذّر الاتصال بـ Discord الآن. حاول مجددًا.",
+    not_authenticated: "انتهت جلستك. سجّل دخولك مجددًا.",
+    storage_unavailable: "اسمح بتخزين بيانات الجلسة لهذا الموقع ثم حاول مجددًا.",
+    login_cancelled: "تم إلغاء تسجيل الدخول. يمكنك المحاولة متى أردت.",
+    network_error: "تعذّر الاتصال بخدمة الدخول. تأكد من الاتصال وحاول مجددًا.",
+    unexpected_response: "تعذّر تأكيد تسجيل الدخول. حاول مجددًا."
+  };
+
+  class LoginError extends Error {
+    constructor(code) { super(code); this.code = code; }
+  }
+
+  function showMessage(text, error = false) {
+    message.textContent = text;
+    message.hidden = !text;
+    message.dataset.error = String(error);
+  }
+
+  function setBusy(value) {
+    busy = value;
+    loginButton.disabled = value;
+    logoutButton.disabled = value;
+    loginButton.textContent = value ? "جارٍ التحقق..." : "تسجيل الدخول عبر Discord";
+  }
+
+  function storageSet(key, value) {
+    try { sessionStorage.setItem(key, JSON.stringify(value)); }
+    catch { throw new LoginError("storage_unavailable"); }
+  }
+
+  function storageGet(key) {
+    try { return JSON.parse(sessionStorage.getItem(key) || "null"); }
+    catch { return null; }
+  }
+
+  function storageRemove(key) {
+    try { sessionStorage.removeItem(key); } catch { /* No session remains usable without its server record. */ }
+  }
+
+  function renderGuest() {
+    profile.hidden = true;
+    guest.hidden = false;
+    document.getElementById("freeland-auth-display-name").textContent = "";
+    document.getElementById("freeland-auth-username").textContent = "";
+    avatar.hidden = true;
+    avatar.removeAttribute("src");
+  }
+
+  function validUser(user) {
+    return user && typeof user.id === "string" && /^\d{17,20}$/.test(user.id) &&
+      typeof user.username === "string" && user.username.length > 0 && user.username.length <= 64 &&
+      typeof user.display_name === "string" && user.display_name.length > 0 && user.display_name.length <= 80;
+  }
+
+  function renderUser(user) {
+    if (!validUser(user)) throw new LoginError("unexpected_response");
+    document.getElementById("freeland-auth-display-name").textContent = user.display_name;
+    document.getElementById("freeland-auth-username").textContent = "@" + user.username;
+    fallback.textContent = Array.from(user.display_name)[0] || "F";
+    fallback.hidden = false;
+    avatar.hidden = true;
+    avatar.removeAttribute("src");
+    if (typeof user.avatar_url === "string") {
+      try {
+        const url = new URL(user.avatar_url);
+        const allowedPath = new RegExp("^/avatars/" + user.id + "/(?:a_)?[a-f0-9]{32}\\.png$");
+        if (url.origin === "https://cdn.discordapp.com" && allowedPath.test(url.pathname)) {
+          avatar.src = url.href;
+          avatar.hidden = false;
+          fallback.hidden = true;
+        }
+      } catch { /* Use the account initial when no valid Discord avatar is available. */ }
+    }
+    guest.hidden = true;
+    profile.hidden = false;
+  }
+
+  async function api(path, method, body, token) {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 30000);
+    try {
+      const headers = { Accept: "application/json" };
+      if (body !== undefined) headers["Content-Type"] = "application/json";
+      if (token) headers.Authorization = "Bearer " + token;
+      const response = await fetch(API + path, {
+        method, headers, body: body === undefined ? undefined : JSON.stringify(body),
+        credentials: "omit", cache: "no-store", referrerPolicy: "no-referrer", signal: controller.signal
+      });
+      let data;
+      try { data = await response.json(); }
+      catch { throw new LoginError("unexpected_response"); }
+      if (!response.ok) throw new LoginError(messages[data?.error] ? data.error : "unexpected_response");
+      return data;
+    } catch (error) {
+      if (error instanceof LoginError) throw error;
+      throw new LoginError("network_error");
+    } finally { clearTimeout(timeout); }
+  }
+
+  function base64(bytes) {
+    return btoa(String.fromCharCode(...new Uint8Array(bytes)))
+      .replaceAll("+", "-").replaceAll("/", "_").replace(/=+$/, "");
+  }
+
+  async function login() {
+    if (busy) return;
+    setBusy(true);
+    showMessage("جارٍ فتح Discord...");
+    try {
+      const verifier = base64(crypto.getRandomValues(new Uint8Array(32)));
+      const challenge = base64(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(verifier)));
+      // Check storage before opening an authorization flow, even in privacy modes.
+      storageSet(FLOW_KEY, { check: true });
+      storageRemove(FLOW_KEY);
+      const result = await api("/auth/start", "POST", { code_challenge: challenge });
+      const url = new URL(result.authorization_url);
+      if (url.origin !== "https://discord.com" || url.pathname !== "/oauth2/authorize" ||
+          !/^[A-Za-z0-9_-]{43}$/.test(result.state || "") || url.searchParams.get("state") !== result.state ||
+          url.searchParams.get("response_type") !== "code" || url.searchParams.get("code_challenge") !== challenge ||
+          url.searchParams.get("code_challenge_method") !== "S256" || url.searchParams.get("scope") !== "identify" ||
+          url.searchParams.get("redirect_uri") !== "https://qtr-max.github.io/FreeLande-website/") {
+        throw new LoginError("unexpected_response");
+      }
+      storageSet(FLOW_KEY, { state: result.state, verifier, created_at: Date.now() });
+      window.location.assign(url.href);
+    } catch (error) {
+      storageRemove(FLOW_KEY);
+      showMessage(messages[error.code] || messages.unexpected_response, true);
+      setBusy(false);
+    }
+  }
+
+  async function completeLogin(returned) {
+    const flow = storageGet(FLOW_KEY);
+    storageRemove(FLOW_KEY);
+    if (!flow || !/^[A-Za-z0-9_-]{43}$/.test(flow.state || "") || flow.state !== returned.state ||
+        !/^[A-Za-z0-9_-]{43}$/.test(flow.verifier || "") || !Number.isFinite(flow.created_at) ||
+        Date.now() - flow.created_at > 600000 || flow.created_at > Date.now() + 60000 ||
+        (returned.issuer && returned.issuer !== "https://discord.com")) {
+      throw new LoginError("auth_state_invalid");
+    }
+    if (returned.error) throw new LoginError(returned.error === "access_denied" ? "login_cancelled" : "discord_authorization_failed");
+    if (!returned.code) throw new LoginError("invalid_auth_request");
+    const result = await api("/auth/exchange", "POST", {
+      code: returned.code, state: flow.state, code_verifier: flow.verifier, issuer: returned.issuer || ""
+    });
+    if (!/^[A-Za-z0-9_-]{43}$/.test(result.session_token || "") || !validUser(result.user) ||
+        !Number.isFinite(Date.parse(result.expires_at)) || Date.parse(result.expires_at) <= Date.now()) {
+      throw new LoginError("unexpected_response");
+    }
+    const nextSession = { token: result.session_token, expires_at: result.expires_at };
+    try { storageSet(SESSION_KEY, nextSession); }
+    catch (error) {
+      try { await api("/auth/logout", "POST", {}, nextSession.token); } catch { /* Expiration also revokes this inaccessible session. */ }
+      throw error;
+    }
+    session = nextSession;
+    renderUser(result.user);
+    lastCheck = Date.now();
+    showMessage("تم تسجيل دخولك بنجاح.");
+  }
+
+  async function restoreSession() {
+    if (!session) return;
+    try {
+      const result = await api("/auth/me", "GET", undefined, session.token);
+      renderUser(result.user);
+      lastCheck = Date.now();
+      showMessage("");
+    } catch (error) {
+      if (error.code === "not_authenticated") {
+        session = null;
+        storageRemove(SESSION_KEY);
+        renderGuest();
+      }
+      showMessage(messages[error.code] || messages.unexpected_response, true);
+    }
+  }
+
+  async function logout() {
+    if (busy || !session) return;
+    setBusy(true);
+    showMessage("جارٍ تسجيل الخروج...");
+    try {
+      await api("/auth/logout", "POST", {}, session.token);
+      session = null;
+      storageRemove(SESSION_KEY);
+      storageRemove(FLOW_KEY);
+      renderGuest();
+      showMessage("تم تسجيل خروجك.");
+    } catch (error) {
+      if (error.code === "not_authenticated") {
+        session = null;
+        storageRemove(SESSION_KEY);
+        renderGuest();
+        showMessage("تم تسجيل خروجك.");
+      } else {
+        showMessage("لم يكتمل تسجيل الخروج. تأكد من الاتصال وحاول مجددًا.", true);
+      }
+    } finally { setBusy(false); }
+  }
+
+  avatar.addEventListener("error", () => { avatar.hidden = true; fallback.hidden = false; });
+  loginButton.addEventListener("click", login);
+  logoutButton.addEventListener("click", logout);
+  document.addEventListener("visibilitychange", async () => {
+    if (!document.hidden && !busy && session && Date.now() - lastCheck > 60000) {
+      setBusy(true);
+      try { await restoreSession(); } finally { setBusy(false); }
+    }
+  });
+
+  (async () => {
+    renderGuest();
+    const saved = storageGet(SESSION_KEY);
+    if (saved && /^[A-Za-z0-9_-]{43}$/.test(saved.token || "") && Date.parse(saved.expires_at) > Date.now()) {
+      session = saved;
+    } else { storageRemove(SESSION_KEY); }
+    let callbackError;
+    try {
+      if (callback) {
+        showMessage("جارٍ تأكيد دخولك...");
+        try { await completeLogin(callback); return; }
+        catch (error) { callbackError = error; }
+      }
+      await restoreSession();
+      if (callbackError) showMessage(messages[callbackError.code] || messages.unexpected_response, true);
+    } finally { setBusy(false); }
+  })();
+})();
+</script>
 </body>
 </html>
