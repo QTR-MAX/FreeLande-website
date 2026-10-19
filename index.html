@@ -415,12 +415,12 @@
         <h2 id="freeland-leaderboard-title">🏆 الليدر بورد</h2>
         <p class="label">أفضل ثلاث قبائل حسب مجموع النقاط</p>
       </div>
-      <span id="freeland-board-badge" class="freeland-board-badge">نتائج محفوظة</span>
+      <span id="freeland-board-badge" class="freeland-board-badge">جارٍ الاتصال</span>
     </div>
     <div id="freeland-board-teams" class="freeland-board-teams" hidden></div>
     <p id="freeland-board-message" class="freeland-board-message" role="status">جارٍ تحميل النتائج...</p>
     <p id="freeland-board-updated" class="label"></p>
-    <p class="freeland-board-note">النتائج حسب آخر ملف نقاط مرفوع إلى الموقع.</p>
+    <p class="freeland-board-note">تتحدّث النتائج تلقائيًا أثناء تشغيل برنامج الليدر بورد.</p>
     <div class="freeland-board-rules" aria-label="طريقة حساب النقاط">
       <span>قتلة لاعب <bdi dir="ltr">+1.30</bdi></span>
       <span>قطعة مبنى مدمرة <bdi dir="ltr">+0.07</bdi></span>
@@ -490,7 +490,7 @@
   const messageEl = document.getElementById("freeland-board-message");
   const updatedEl = document.getElementById("freeland-board-updated");
   const badgeEl = document.getElementById("freeland-board-badge");
-  const dataUrl = new URL("./FreeLand-Leaderboard/freeland_data/leaderboard.json", document.baseURI);
+  const dataUrl = new URL("https://freeland-leaderboard.qtralyafei321123.workers.dev/leaderboard");
   let loading = false;
   let hasSavedResults = false;
 
@@ -523,7 +523,9 @@
     if (typeof data.generated_at_utc !== "string" || !Number.isFinite(updated.getTime())) {
       throw new Error("Invalid results timestamp");
     }
-    return { teams: teams.slice(0, 3), updated: updated };
+    const received = new Date(data.sync?.received_at_utc);
+    if (!Number.isFinite(received.getTime())) throw new Error("Missing synchronization timestamp");
+    return { teams: teams.slice(0, 3), updated: updated, received: received };
   }
 
   function render(data) {
@@ -563,8 +565,13 @@
     timestamp.dateTime = board.updated.toISOString();
     timestamp.title = board.updated.toISOString();
     updatedEl.replaceChildren(document.createTextNode("آخر تحديث للنتائج: "), timestamp);
-    badgeEl.textContent = "نتائج محفوظة";
-    badgeEl.dataset.error = "false";
+    const stale = Date.now() - board.received.getTime() > 120000;
+    badgeEl.textContent = stale ? "التحديث متأخر" : "إرسال تلقائي";
+    badgeEl.dataset.error = stale ? "true" : "false";
+    if (stale) {
+      messageEl.hidden = false;
+      messageEl.textContent = "آخر النتائج محفوظة. لم يصل تحديث حديث من برنامج الليدر بورد.";
+    }
     hasSavedResults = true;
   }
 
